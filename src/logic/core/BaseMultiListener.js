@@ -64,7 +64,7 @@ const MultiListener = function (dataListeners, ignoreTrigger, debug, stuckWarnin
 
         const notFirstCall = !initialCall || initialTrigger
 
-        const name = nameOverride || _name
+        const name = nameOverride || _name || listener.name
 
         if (trigger) {
           const isSelfTrigger = trigger.path === dataPath && trigger.type === type && trigger.value === data
@@ -78,8 +78,6 @@ const MultiListener = function (dataListeners, ignoreTrigger, debug, stuckWarnin
           } else {
             basisTriggerIndices[receiverId] = trigger.index
           }
-        } else {
-          console.warn('Missing trigger in MultiListener, this is depcretated. Soon this will throw an error.')
         }
 
         debug && console.log('got new data for', name, data, trigger)

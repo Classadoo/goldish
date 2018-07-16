@@ -4,12 +4,12 @@ const WithData = require('./WithData')
 const DataInput = WithData(({data, setters}) => {
   let el
 
-  handleUpdate = () => {
-    setters.data(ref.value)
+  const handleUpdate = () => {
+    setters.data(el.value)
   }
 
   return (
-    <input ref={ref => el = ref} onKeyDown={handleUpdate} defaultValue={data} type='text'></input>
+    <input ref={ref => el = ref} onKeyUp={handleUpdate} defaultValue={data} type='text'></input>
   )
 })
 
