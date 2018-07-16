@@ -167,46 +167,6 @@ function DataHandlers(refBuilder, serverValues, _type) {
       return handlerCopy
     }
 
-    this.filter = function (filterFn, defaultValue) {
-      const handlerCopy = Util.deepCopy(this)
-      const copyOn = handlerCopy.on
-      const copyOnce = handlerCopy.once
-      
-      const getFilterResult = (res) => {
-        try {
-          return filterFn(res)
-        } catch (e) {
-          console.error('ERROR in data handler filter function:', e)
-          return null
-        }
-      }
-
-      handlerCopy.on = function (callback) {
-        let lastValidResult = typeof defaultValue === 'undefined' ? null : defaultValue
-        console.log('what?', lastValidResult)
-
-        return copyOn(function () {
-          const args = [].slice.call(arguments)
-          console.log('sss', getFilterResult(args[0]))
-          args[0] = getFilterResult(args[0]) ? args[0] : lastValidResult
-          lastValidResult = args[0]
-          callback.apply(callback, args)
-        })
-      }
-
-      handlerCopy.once = function (callback) {
-        return copyOnce(function () {
-          const args = [].slice.call(arguments)
-          args[0] = getFilterResult(args[0]) ? args[0] : defaultValue || null
-          callback && callback.apply(callback, args)
-        }).then(value => {
-          return getFilterResult(value) ? value : defaultValue || null
-        })
-      }
-
-      return handlerCopy
-    }
-
     // turns firebase keys into a list:
     this.asList = function () {
       return this.map(ref => Object.keys(ref || {}))
