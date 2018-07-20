@@ -1,8 +1,8 @@
-const Util = require('../../common/Util.js')
-const MultiListener = require('./MultiListener')
+const Util = require("../../common/Util.js")
+const MultiListener = require("./MultiListener")
 
 function FakePromise(val) {
-  this.then = function (resolve) {
+  this.then = function(resolve) {
     const returnVal = resolve(val)
     if (returnVal && returnVal.then) {
       return returnVal
@@ -14,41 +14,73 @@ function FakePromise(val) {
 }
 
 function RefBuilders(baseRefBuilder, pathMap) {
-  function parameterized(pathPieces) {
-    return function () {
+  function parameterized(pathString) {
+    return function() {
       const parameters = [].slice.call(arguments)
 
-      const pathDescriptor = pathPieces.join('/<param>/')
+      const pathDescriptor = pathString
 
-      if (parameters.length !== pathPieces.length - 1) {
-        console.error(`wrong number of parameters to build ref for path: ${pathDescriptor}`, parameters)
-        throw new Error(`wrong number of parameters to build ref for path: ${pathDescriptor}`, parameters)
+      const pathPieces = pathString.match(/(<[^<>]+>)/g) || []
+
+      if (parameters.length !== pathPieces.length) {
+        console.error(
+          `wrong number of parameters to build ref for path: ${pathDescriptor}`,
+          parameters
+        )
+        throw new Error(
+          `wrong number of parameters to build ref for path: ${pathDescriptor}`,
+          parameters
+        )
       }
 
       let nullParam = false
-      parameters.forEach((param) => {
+      parameters.forEach((param, i) => {
+        const paramDescriptor = pathPieces[i]
+        const paramTypeMatch = paramDescriptor.match(/:([a-z]+)/)
+        const paramType = paramTypeMatch && paramTypeMatch[1]
+
         if (param === null) {
           nullParam = true
         }
 
-        if (!((typeof param === 'boolean') || (typeof param === 'string') || (typeof param === 'number') || param === null)) {
-          const message = `invalid param, ${JSON.stringify(param)} sent to ref ${pathDescriptor}. All params are: ${parameters}`
+        const allChecks =
+          typeof param === "boolean" ||
+          typeof param === "string" ||
+          typeof param === "number"
+        let check = allChecks
+        if (paramType === "uid") {
+          check = typeof param === "string" && param[0] === "-"
+        } else if (paramType) {
+          check = typeof param === paramType
+        }
+
+        if (!check && param !== null) {
+          const message = `invalid param, ${JSON.stringify(
+            param
+          )} for param ${paramDescriptor}, while building ref ${pathDescriptor}. All params are: ${parameters}`
+          console.warn(message)
           throw new ReferenceError(message)
         }
       })
+
       if (nullParam) {
-        throw new TypeError(`null param for path ${pathDescriptor}. All params are: ${parameters}`)
+        throw new TypeError(
+          `null param for path ${pathDescriptor}. All params are: ${parameters}`
+        )
       }
 
-      const piecesWithParams = pathPieces.map((pathPiece, i) => {
-        if (parameters[i] !== undefined) {
-          return pathPiece ? `${pathPiece}/${parameters[i]}` : parameters[i]
-        }
-        return pathPiece
-      }).filter(component => typeof component !== 'undefined')
+      let pathDescriptorCopy = pathDescriptor.slice(0, pathDescriptor.length)
 
-      const path = piecesWithParams.join('/')
-      return path
+      pathPieces.forEach((pathPiece, i) => {
+        if (parameters[i] !== undefined) {
+          pathDescriptorCopy = pathDescriptorCopy.replace(
+            pathPiece,
+            parameters[i]
+          )
+        }
+      })
+
+      return pathDescriptorCopy
     }
   }
 
@@ -67,7 +99,9 @@ function RefBuilders(baseRefBuilder, pathMap) {
     const compositeHandlers = dynamicIndexes.map(index => dynamicArgs[index])
     this.compositeHandlers = compositeHandlers
 
-    this.identifier = `#${JSON.stringify(staticArgList)}~${JSON.stringify(opts)}#`
+    this.identifier = `#${JSON.stringify(staticArgList)}~${JSON.stringify(
+      opts
+    )}#`
 
     function on(callback) {
       // if we have only static args we should still wait for one cycle to return
@@ -80,7 +114,7 @@ function RefBuilders(baseRefBuilder, pathMap) {
       let offArgListener
       if (dynamicIndexes.length) {
         const dynamicArgMap = {}
-        dynamicIndexes.forEach((argIndex) => {
+        dynamicIndexes.forEach(argIndex => {
           const handler = dynamicArgs[argIndex]
           dynamicArgMap[argIndex] = handler
         })
@@ -89,35 +123,42 @@ function RefBuilders(baseRefBuilder, pathMap) {
         offArgListener = dynamicArgListener.off
         dynamicArgListener.on((res, _, trigger, compositePaths) => {
           const compositeValues = []
-          Object.keys(res).forEach((index) => {
+          Object.keys(res).forEach(index => {
             finalArgList[index] = res[index]
             compositeValues[index] = res[index]
           })
 
           const cachedArgList = finalArgList.slice()
 
-          pendingDataChange = pendingDataChange.then(() => returnRef(cachedArgList, trigger, compositeValues, compositePaths))
+          pendingDataChange = pendingDataChange.then(() =>
+            returnRef(cachedArgList, trigger, compositeValues, compositePaths)
+          )
         })
       } else {
         // we do this to make sure this function returns before we execute the callback
         Promise.resolve().then(_ => returnRef(finalArgList))
       }
 
-      function returnRef(argList, triggerPath, compositeValues, compositePaths) {
+      function returnRef(
+        argList,
+        triggerPath,
+        compositeValues,
+        compositePaths
+      ) {
         try {
           var path = refPathFun.apply(this, argList)
         } catch (e) {
           return callback(e, triggerPath, null, compositePaths)
         }
 
-        return buildRefWithOpts(baseRefBuilder(path)).then((ref) => {
+        return buildRefWithOpts(baseRefBuilder(path)).then(ref => {
           if (!callbackCancelled) {
             callback(ref, triggerPath, compositeValues, compositePaths || [])
           }
         })
       }
 
-      return function () {
+      return function() {
         callbackCancelled = true
         offArgListener && offArgListener()
       }
@@ -129,7 +170,7 @@ function RefBuilders(baseRefBuilder, pathMap) {
       const compositeValues = []
 
       if (dynamicIndexes.length) {
-        const resolvedDynamicIndexes = dynamicIndexes.map((argIndex) => {
+        const resolvedDynamicIndexes = dynamicIndexes.map(argIndex => {
           const handler = dynamicArgs[argIndex]
 
           return handler.once().then((data, name) => {
@@ -142,10 +183,13 @@ function RefBuilders(baseRefBuilder, pathMap) {
         refReady = new FakePromise()
       }
 
-      return refReady.then(function () {
+      return refReady.then(function() {
         try {
           const path = refPathFun.apply(this, finalArgList)
-          return buildRefWithOpts(baseRefBuilder(path)).then(ref => ({ ref, compositeValues }))
+          return buildRefWithOpts(baseRefBuilder(path)).then(ref => ({
+            ref,
+            compositeValues
+          }))
         } catch (e) {
           return { ref: e }
         }
@@ -153,14 +197,16 @@ function RefBuilders(baseRefBuilder, pathMap) {
     }
 
     function buildRefWithOpts(refPromise) {
-      return refPromise.then(ref => Object.keys(opts).reduce((ref, optName) => {
-        const optArgs = opts[optName]
-        if (!ref[optName]) {
-          throw Error('invalid query opt for this store: ', optName)
-        } else if (optArgs) {
-          return ref[optName](...optArgs)
-        }
-      }, ref))
+      return refPromise.then(ref =>
+        Object.keys(opts).reduce((ref, optName) => {
+          const optArgs = opts[optName]
+          if (!ref[optName]) {
+            throw Error("invalid query opt for this store: ", optName)
+          } else if (optArgs) {
+            return ref[optName](...optArgs)
+          }
+        }, ref)
+      )
     }
 
     // only should be used by in mem refs when getting sync data in very special cases.
@@ -174,19 +220,24 @@ function RefBuilders(baseRefBuilder, pathMap) {
     this._syncRef = syncRef
   }
 
-  RefGetter.prototype.buildNewWithQuery = function (queryName, queryArgs) {
+  RefGetter.prototype.buildNewWithQuery = function(queryName, queryArgs) {
     const optsUpdate = {}
     optsUpdate[queryName] = queryArgs
     const newOpts = Util.extend(this.opts, optsUpdate)
-    return new RefGetter(this.staticArgList, this.dynamicArgs, this.refPathFun, newOpts)
+    return new RefGetter(
+      this.staticArgList,
+      this.dynamicArgs,
+      this.refPathFun,
+      newOpts
+    )
   }
 
   function buildRefsFromObject(nestedPathMap) {
     const refBuilders = {}
-    Object.keys(nestedPathMap).forEach((name) => {
+    Object.keys(nestedPathMap).forEach(name => {
       const possiblePathList = nestedPathMap[name]
 
-      if (possiblePathList instanceof Array) {
+      if (typeof possiblePathList === "string") {
         refBuilders[name] = buildRefGetter(parameterized(possiblePathList))
       } else {
         refBuilders[name] = buildRefsFromObject(possiblePathList)
@@ -197,7 +248,7 @@ function RefBuilders(baseRefBuilder, pathMap) {
   }
 
   function buildRefGetter(refPathFun, debug) {
-    return function () {
+    return function() {
       const args = [].slice.call(arguments)
 
       const dynamicArgs = {}

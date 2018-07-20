@@ -1,8 +1,8 @@
-const Util = require('../../common/Util.js')
-const parseAddedAndRemovedChildren = require('../../common/parseAddedAndRemovedChildren')
+const Util = require("../../common/Util.js")
+const parseAddedAndRemovedChildren = require("../../common/parseAddedAndRemovedChildren")
 
 function isEmptyObject(value) {
-  return (typeof value === 'object') && !Object.keys(value || {}).length
+  return typeof value === "object" && !Object.keys(value || {}).length
 }
 
 function Writer(storage) {
@@ -33,17 +33,20 @@ function Writer(storage) {
     }
 
     const clean = cleanPath(path)
-    const components = clean.split('/')
+    const components = clean.split("/")
 
     const builtPath = []
     components.forEach((component, i) => {
       const isLastComponent = i == components.length
 
       if (!isLastComponent) {
-        const currentPath = builtPath.join('/')
+        const currentPath = builtPath.join("/")
         const currentValue = get(currentPath)
 
-        const oldChildren = Util.extend({}, currentValue && currentValue.children && currentValue.children)
+        const oldChildren = Util.extend(
+          {},
+          currentValue && currentValue.children && currentValue.children
+        )
         const newChild = components[i]
         let newChildren
 
@@ -65,8 +68,8 @@ function Writer(storage) {
   }
 
   function removeChildFromParent(path) {
-    const components = path.split('/')
-    const parent = components.slice(0, components.length - 1).join('/')
+    const components = path.split("/")
+    const parent = components.slice(0, components.length - 1).join("/")
     const key = components[components.length - 1]
 
     storage.removeChild(parent, key)
@@ -76,18 +79,18 @@ function Writer(storage) {
     const localObj = {}
 
     function parseObj(obj, basePath) {
-      if (obj && typeof obj === 'object' && !obj.__noParse) {
+      if (obj && typeof obj === "object" && !obj.__noParse) {
         const keys = Object.keys(obj)
 
         const children = {}
 
-        keys.forEach((key) => {
+        keys.forEach(key => {
           children[key] = 1
         })
 
         writeOut(basePath, { children, value: null })
 
-        keys.forEach((key) => {
+        keys.forEach(key => {
           const path = `${basePath}/${key}`
           const childObj = obj[key]
           parseObj(obj[key], path)
@@ -110,8 +113,8 @@ function Writer(storage) {
   function removeMissingKeys(newStorageObj, oldStorageObj) {
     const oldPaths = Object.keys(oldStorageObj || {})
 
-    oldPaths.forEach((path) => {
-      if (typeof newStorageObj[cleanPath(path)] === 'undefined') {
+    oldPaths.forEach(path => {
+      if (typeof newStorageObj[cleanPath(path)] === "undefined") {
         removePath(path)
       }
     })
@@ -126,7 +129,7 @@ function Writer(storage) {
       obj[path] = data
 
       if (data && data.children) {
-        Object.keys(data.children).forEach((child) => {
+        Object.keys(data.children).forEach(child => {
           parse(`${path}/${child}`)
         })
       }
@@ -163,9 +166,9 @@ function Getter(storage, extractStoredValue) {
       if (data && data.children) {
         const obj = {}
 
-        Object.keys(data.children).forEach((child) => {
+        Object.keys(data.children).forEach(child => {
           const value = parse(`${path}/${child}`)
-          if ((typeof value !== 'undefined') && !isEmptyObject(value)) {
+          if (typeof value !== "undefined" && !isEmptyObject(value)) {
             obj[child] = value
           }
         })
@@ -182,7 +185,10 @@ function Getter(storage, extractStoredValue) {
 }
 
 function cleanPath(path) {
-  return path.split('/').filter(Boolean).join('/')
+  return path
+    .split("/")
+    .filter(Boolean)
+    .join("/")
 }
 
 function UserEvents(getDataForPath) {
@@ -194,7 +200,7 @@ function UserEvents(getDataForPath) {
 
     const pathHandlers = handlersForType[clean] || {}
     const handlerId = Util.guid()
-    pathHandlers[handlerId] = ({ handler, queryOpts })
+    pathHandlers[handlerId] = { handler, queryOpts }
     handlersForType[clean] = pathHandlers
 
     // we don't want to fire in this event loop, otherwise we won't be able to
@@ -209,20 +215,20 @@ function UserEvents(getDataForPath) {
       // since we defer by one event loop it's possible that in between we've actually fired
       // a change event, let's make sure we don't fire twice with the same data
 
-      if (type === 'value') {
+      if (type === "value") {
         var currentData = getDataForPath(clean)
         handler(currentData, clean)
-      } else if (type === 'child_added') {
+      } else if (type === "child_added") {
         var currentData = getDataForPath(clean) || {}
 
-        if (typeof currentData === 'object') {
+        if (typeof currentData === "object") {
           let keys = Object.keys(currentData)
 
           if (queryOpts && queryOpts.limitToLast) {
             keys = keys.slice(keys.length - queryOpts.limitToLast, keys.length)
           }
 
-          keys.forEach((key) => {
+          keys.forEach(key => {
             const fullPath = `${clean}/${key}`
             const childData = currentData[key]
 
@@ -232,7 +238,7 @@ function UserEvents(getDataForPath) {
       }
     })
 
-    return function () {
+    return function() {
       cancelled = true
       delete pathHandlers[handlerId]
     }
@@ -253,12 +259,15 @@ function EventProcessor(getDataForPath, userEvents, extractStoredValue) {
 
     const allPathsToFire = {}
 
-    changes.forEach((change) => {
+    changes.forEach(change => {
       const oldData = change.oldData
       const newData = change.newData
       const path = change.key
 
-      const addedAndRemovedChildren = parseAddedAndRemovedChildren(oldData, newData)
+      const addedAndRemovedChildren = parseAddedAndRemovedChildren(
+        oldData,
+        newData
+      )
       const addedChildren = addedAndRemovedChildren.added
       const removedChildren = addedAndRemovedChildren.removed
 
@@ -266,22 +275,23 @@ function EventProcessor(getDataForPath, userEvents, extractStoredValue) {
       const newValue = extractStoredValue(newData)
 
       if (newValue !== oldValue || opts.forceChangeEvent) {
-        const components = path.split('/').filter(Boolean)
+        const components = path.split("/").filter(Boolean)
 
         const builtPathList = []
 
-        components.forEach((component) => {
+        components.forEach(component => {
           builtPathList.push(component)
-          allPathsToFire[builtPathList.join('/')] = 1
+          allPathsToFire[builtPathList.join("/")] = 1
         })
       }
 
       addedChildren.length && fireChildAddedHandlers(path, addedChildren, opts)
-      removedChildren.length && fireChildRemovedHandlers(path, removedChildren, opts)
+      removedChildren.length &&
+        fireChildRemovedHandlers(path, removedChildren, opts)
     })
 
-    Object.keys(allPathsToFire).forEach((pathToFire) => {
-      const handlerList = userEvents.handlers('value', pathToFire) || []
+    Object.keys(allPathsToFire).forEach(pathToFire => {
+      const handlerList = userEvents.handlers("value", pathToFire) || []
       handlerList.forEach(fire)
 
       function fire(handlerAndQueryOpts) {
@@ -294,10 +304,10 @@ function EventProcessor(getDataForPath, userEvents, extractStoredValue) {
   }
 
   function fireChildRemovedHandlers(path, removedChildren, opts) {
-    const handlerList = userEvents.handlers('child_removed', path) || []
+    const handlerList = userEvents.handlers("child_removed", path) || []
 
-    handlerList.forEach((handlerAndQueryOpts) => {
-      removedChildren.forEach((child) => {
+    handlerList.forEach(handlerAndQueryOpts => {
+      removedChildren.forEach(child => {
         // the actual firebase spec is to return the latest verson of the
         // child that was removed. However, we don't ever need that,
         // and doing it right would be prett complex.
@@ -314,12 +324,16 @@ function EventProcessor(getDataForPath, userEvents, extractStoredValue) {
   }
 
   function fireChildAddedHandlers(path, addedChildren, opts) {
-    const handlerList = userEvents.handlers('child_added', path) || []
+    const handlerList = userEvents.handlers("child_added", path) || []
 
-    handlerList.forEach((handlerAndQueryOpts) => {
-      addedChildren.forEach((child) => {
+    handlerList.forEach(handlerAndQueryOpts => {
+      addedChildren.forEach(child => {
         if (handlerAndQueryOpts.firstFire) {
-          handlerAndQueryOpts.handler(getDataForPath(`${path}/${child}`), `${path}/${child}`, opts)
+          handlerAndQueryOpts.handler(
+            getDataForPath(`${path}/${child}`),
+            `${path}/${child}`,
+            opts
+          )
         }
       })
     })
@@ -332,7 +346,11 @@ function Store(storage, seedData) {
   // to mimic wilddog and firebase we want to
   // convert any undefined values to null
   function convertUndefinedToNull(storedValue) {
-    if (!storedValue || (typeof storedValue.value === 'undefined') || isEmptyObject(storedValue.value)) {
+    if (
+      !storedValue ||
+      typeof storedValue.value === "undefined" ||
+      isEmptyObject(storedValue.value)
+    ) {
       return null
     }
     return storedValue && storedValue.value
@@ -341,10 +359,14 @@ function Store(storage, seedData) {
   const getter = new Getter(storage, convertUndefinedToNull)
   const writer = new Writer(storage)
   const userEvents = new UserEvents(getter.get)
-  const eventProcessor = new EventProcessor(getter.get, userEvents, convertUndefinedToNull)
+  const eventProcessor = new EventProcessor(
+    getter.get,
+    userEvents,
+    convertUndefinedToNull
+  )
   storage.registerChangeListener(eventProcessor.respondToChange)
 
-  writer.write('', seedData)
+  writer.write("", seedData)
 
   this.get = getter.get
   this.set = writer.write

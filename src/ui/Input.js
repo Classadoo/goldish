@@ -1,23 +1,21 @@
 const React = require("react")
 const WithData = require("./WithData")
 
-const DataInput = WithData(({ data, dataHandlers }) => {
+const DataInput = WithData(({ text, dataHandlers }) => {
   let el
 
   const handleUpdate = () => {
-    dataHandlers.data.set(el.value)
+    dataHandlers.text.set(el.value)
   }
 
   return (
     <input
       ref={ref => (el = ref)}
       onKeyUp={handleUpdate}
-      defaultValue={data}
+      defaultValue={text}
       type="text"
     />
   )
 })
 
-const Input = props => <DataInput dataHandlers={{ data: props.handler }} />
-
-module.exports = Input
+module.exports = DataInput

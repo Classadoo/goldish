@@ -3,8 +3,9 @@ const {
   initializeFirebase,
   CurrentTimeHandler,
   MultiListener
-} = require("../../dist/shovel")
-const { Input, DateTime, WithData } = require("../../dist/shovel-ui")
+} = require("../../dist/core/brackish")
+const { Input, DateTime, WithData } = require("../../dist/ui/brackish-ui")
+
 const React = require("react")
 const ReactDOM = require("react-dom")
 
@@ -75,7 +76,7 @@ const Display = WithData(({ offsets, dataHandlers }) => {
           <OffsetDisplay
             key={offsetId}
             offsetId={offsetId}
-            dataHandlers={[local.selectedOffsetId()]}
+            selectedOffsetId={local.selectedOffsetId()}
           />
         ))}
       </div>
@@ -85,6 +86,6 @@ const Display = WithData(({ offsets, dataHandlers }) => {
 })
 
 ReactDOM.render(
-  <Display dataHandlers={[remote.offsets(local.userName())]} />,
+  <Display offsets={remote.offsets(local.userName())} />,
   document.getElementById("root")
 )

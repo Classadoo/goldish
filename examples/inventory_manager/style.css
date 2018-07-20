@@ -1,0 +1,54 @@
+.iventory-item-field {
+  display: grid;
+  grid-template-columns: 70px 80px;
+}
+
+.iventory-item-field-label {
+  margin-right: 10px;
+}
+
+.inventory-item {
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 2px;
+  padding: 7px;
+}
+
+.inventory-item-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.inventory-container {
+  display: grid;
+}
+
+.ui {
+  display: grid;
+  grid-template-columns: 200px 300px;
+  grid-column-gap: 30px;
+}
+
+.big-info-header, .inventory-header {
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+#topbar-root {
+  height: 20px;
+  margin-bottom: 10px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;  
+}
+
+.topbar-item {
+  margin-left: 15px;
+}
+
+.topbar-item > button {
+  margin-left: 5px;
+}

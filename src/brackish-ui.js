@@ -1,4 +1,6 @@
 module.exports.Input = require("./ui/Input")
 module.exports.ShortText = require("./ui/ShortText")
 module.exports.DateTime = require("./ui/DateTime")
+module.exports.Image = require("./ui/Image")
+module.exports.Toggle = require("./ui/Toggle")
 module.exports.WithData = require("./ui/WithData")

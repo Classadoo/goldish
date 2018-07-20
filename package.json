@@ -1,0 +1,14 @@
+{
+  "name": "Shovel-dev",
+  "description": "Shovel real time data library",
+  "author": "David Gaynor",
+  "version": "0.0.10",
+  "dependencies": {
+    "eslint": "*",
+    "eslint_d": "*",
+    "eslint-config-prettier": "*",
+    "eslint-plugin-prettier": "*",
+    "eslint-plugin-react": "*",
+    "prettier": "^1.13.7"
+  }
+}

@@ -33,7 +33,14 @@ function withData(Component, _opts) {
     }
 
     mountListeners(props) {
-      const dataHandlers = props.dataHandlers || []
+      const dataHandlers = {}
+      Object.keys(props).forEach(propName => {
+        const value = props[propName]
+        // if it looks like a dataHandler, add it and hydrate it
+        if (value && value.on) {
+          dataHandlers[propName] = value
+        }
+      })
 
       this.multiListener = new MultiListener(
         dataHandlers,
@@ -41,17 +48,7 @@ function withData(Component, _opts) {
         debug || props._dataDebug
       )
 
-      this.dataHandlers = {}
-      if (dataHandlers instanceof Array) {
-        dataHandlers.forEach(handler => {
-          this.dataHandlers[handler.name] = handler
-        })
-      } else {
-        Object.keys(dataHandlers).map(handlerName => {
-          const handler = dataHandlers[handlerName]
-          this.dataHandlers[handlerName] = handler
-        })
-      }
+      this.dataHandlers = dataHandlers
 
       this.multiListener.on(cache => {
         this.gotData = true
@@ -78,8 +75,8 @@ function withData(Component, _opts) {
         }
         return (
           <Component
-            {...this.state}
             {...props}
+            {...this.state}
             dataHandlers={this.dataHandlers}
           />
         )
