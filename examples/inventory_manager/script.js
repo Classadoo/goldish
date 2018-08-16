@@ -2,7 +2,7 @@ const {
   initializeInMemory,
   Hydrator,
   MultiListener
-} = require("../../dist/core/brackish")
+} = require("../../dist/core/goldish")
 
 const initializeFirebase = require("./initialize_firebase")
 const InventoryDisplay = require("./inventory_display")
@@ -11,10 +11,11 @@ const React = require("react")
 const ReactDOM = require("react-dom")
 const {
   ShortText,
+  TextArea,
   Image,
   Toggle,
   WithData
-} = require("../../dist/ui/brackish-ui")
+} = require("../../dist/ui/goldish-ui")
 
 const persistentDataPathMap = {
   currentInventory: "currentInventory",
@@ -75,7 +76,10 @@ const BigItemDisplay = WithData(({ selectedItemId }) => {
         <Image src={db.Item.imageUrl(local.selectedItemId())} />
       </div>
       <div>
-        <ShortText text={db.Item.name(local.selectedItemId())} />
+        <TextArea
+          updateOnShiftEnter
+          text={db.Item.name(local.selectedItemId())}
+        />
       </div>
       <div>
         <ShortText text={db.Item.description(local.selectedItemId())} />

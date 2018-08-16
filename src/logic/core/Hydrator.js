@@ -329,7 +329,7 @@ function Hydrator(listDataHandler, hydratorDataHandler, _opts) {
             return
           }
 
-          if (val._index) {
+          if (val && val._index) {
             const indexCache = val._index
             delete val._index
             Object.defineProperty(val, "_index", { value: indexCache })

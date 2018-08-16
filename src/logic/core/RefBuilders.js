@@ -24,11 +24,11 @@ function RefBuilders(baseRefBuilder, pathMap) {
 
       if (parameters.length !== pathPieces.length) {
         console.error(
-          `wrong number of parameters to build ref for path: ${pathDescriptor}`,
+          `wrong number of parameters for datahandler: ${pathDescriptor}`,
           parameters
         )
         throw new Error(
-          `wrong number of parameters to build ref for path: ${pathDescriptor}`,
+          `wrong number of parameters for datahandler: ${pathDescriptor}`,
           parameters
         )
       }

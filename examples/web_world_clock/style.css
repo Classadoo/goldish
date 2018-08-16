@@ -1,0 +1,12 @@
+#root > div {
+  display: flex;
+  align-items: center;
+}
+
+#root span {
+  margin-left: 10px;
+  border: 1px solid black;
+  display: inline-block;
+  width: 130px;
+  height: 20px;
+}

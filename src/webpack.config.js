@@ -1,16 +1,16 @@
-const path = require("path")
+const path = require("path") 
 
 const config = [
   {
-    name: "brackish",
+    name: "goldish",
     entry: {
-      brackish: ["./brackish.js"]
+      goldish: ["./goldish.js"]
     },
     output: {
       path: path.resolve("../dist/core"),
       filename: "[name].js",
       libraryTarget: "umd",
-      library: "brackish"
+      library: "goldish"
     },
     resolve: {
       extensions: [".js", ".json"]
@@ -30,15 +30,15 @@ const config = [
     }
   },
   {
-    name: "brackish-ui",
+    name: "goldish-ui",
     entry: {
-      "brackish-ui": ["./brackish-ui.js"]
+      "goldish-ui": ["./goldish-ui.js"]
     },
     output: {
       path: path.resolve("../dist/ui"),
       filename: "[name].js",
       libraryTarget: "umd",
-      library: "brackish-ui"
+      library: "goldish-ui"
     },
     resolve: {
       extensions: [".js", ".json"]

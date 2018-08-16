@@ -31,32 +31,17 @@ function RefreshQueueManager(debug, stuckWarningWaitTime, pathCounts, onStuck, o
         console.warn('Multilistener is unstuck')
         onUnstuck()
 
-        if (warnedAboutBeingStuck === 'remote') {
-          window.LogError('Multilistener is unstuck')
-        }
-
         warnedAboutBeingStuck = false
       }
     } else {
       const timeSinceLastChange = Date.now() - lastTimeFirstIdChanged
 
       if (timeSinceLastChange > stuckWarningWaitTime) {
-        window.stuckWarningCount = window.stuckWarningCount || 0
         console.warn('Multilistener may be stuck: ', refreshQueue.length, refreshQueue[0].values, timeSinceLastChange, pathCounts, window.stuckWarningCount)
 
         onStuck()
-
-        if (window.stuckWarningCount < 3 && !warnedAboutBeingStuck) {
-          window.stuckWarningCount += 1
-          // reset the stuck warning count after waiting for 10 seconds
-          setTimeout(() => {
-            window.stuckWarningCount = 0
-          }, 10000)
-          window.LogError(`${window.stuckWarningCount} Multilistener may be stuck: ${refreshQueue.length}, ${JSON.stringify(refreshQueue[0].values)}`)
-          warnedAboutBeingStuck = 'remote'
-        } else if (!warnedAboutBeingStuck) {
-          warnedAboutBeingStuck = true
-        }
+       
+        warnedAboutBeingStuck = true
       }
     }
 

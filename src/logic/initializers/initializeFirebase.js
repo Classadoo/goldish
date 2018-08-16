@@ -2,7 +2,7 @@ const CurrentUser = require("../core/CurrentUser")
 const initializeFirebaseDataHandlers = require("./initializeFirebaseDataHandlers.js")
 const appendBaseToAllPathsInPathMap = require('./appendBaseToAllPathsInPathMap')
 
-function initializeFirebaseShovel(pathMap, initData, opts) {
+function initializeFirebase(pathMap, initData, opts) {
   if (!initData.projectId || !initData.webApiKey) {
     throw new Error("missing firebase app name or firebase web key")
   }
@@ -24,9 +24,9 @@ function initializeFirebaseShovel(pathMap, initData, opts) {
 
   const dataHandlers = initializeFirebaseDataHandlers(firebase, pathMap)
 
-  const currentUser = new CurrentUser(firebase.auth)
+  const currentUser = new CurrentUser(Promise.resolve(firebase.auth()))
 
   return { dataHandlers, currentUser }
 }
 
-module.exports = initializeFirebaseShovel
+module.exports = initializeFirebase

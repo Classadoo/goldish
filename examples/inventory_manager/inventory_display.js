@@ -1,4 +1,4 @@
-const { Input, WithData } = require("../../dist/ui/brackish-ui")
+const { Input, WithData } = require("../../dist/ui/goldish-ui")
 const React = require("react")
 
 const InventoryItem = WithData(
@@ -19,7 +19,7 @@ const InventoryItem = WithData(
       <div className="inventory-item" style={style}>
         <div className="iventory-item-field">
           <div className="iventory-item-field-label">Name:</div>
-          <Input text={db.Item.name(id)} />
+          <Input text={db.Item.name(id)} updateOnEnter />
         </div>
 
         <div className="iventory-item-field">

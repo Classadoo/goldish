@@ -1,7 +1,7 @@
 const CurrentUser = require('../core/CurrentUser')
 const initializeWilddogDataHandlers = require('./initializeWilddogDataHandlers')
 
-function initializeWilddogShovel(pathMap, initData) {
+function initializeWilddog(pathMap, initData) {
   if (!initData.projectId) {
     console.error('missing wilddog app name')
   }
@@ -21,4 +21,4 @@ function initializeWilddogShovel(pathMap, initData) {
   return { dataHandlers, currentUser }
 }
 
-module.exports = initializeWilddogShovel
+module.exports = initializeWilddog

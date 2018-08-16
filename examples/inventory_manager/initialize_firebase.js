@@ -1,4 +1,4 @@
-const { initializeFirebase } = require("../../dist/core/brackish")
+const { initializeFirebase } = require("../../dist/core/goldish")
 const seedData = require("./seed_data")
 
 module.exports = pathMap => {
@@ -16,7 +16,7 @@ module.exports = pathMap => {
   )
 
   remote._root().once(data => {
-    remote._root().set(seedData)
+    !data && remote._root().set(seedData)
   })
 
   return remote
