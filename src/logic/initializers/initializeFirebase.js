@@ -1,32 +1,24 @@
-const CurrentUser = require("../core/CurrentUser")
-const initializeFirebaseDataHandlers = require("./initializeFirebaseDataHandlers.js")
-const appendBaseToAllPathsInPathMap = require('./appendBaseToAllPathsInPathMap')
+const CurrentUser = require('../core/CurrentUser')
 
-function initializeFirebase(pathMap, initData, opts) {
+function initializeFirebase(initData) {
   if (!initData.projectId || !initData.webApiKey) {
-    throw new Error("missing firebase app name or firebase web key")
+    throw new Error('missing firebase app name or firebase web key')
   }
 
   const firebaseConfig = {
     apiKey: initData.webApiKey,
     authDomain: `${initData.projectId}.firebaseapp.com`,
-    databaseURL: `${initData.projectId}.firebaseio.com`
+    databaseURL: `${initData.projectId}.firebaseio.com`,
+    projectId: initData.projectId
   }
 
   firebase.initializeApp(firebaseConfig)
 
   // we auto add the root to the path map, for easy debugging access
-  pathMap._root = ''
-
-  if (opts.pathBase) {
-    appendBaseToAllPathsInPathMap(pathMap, opts.pathBase)
-  }
-
-  const dataHandlers = initializeFirebaseDataHandlers(firebase, pathMap)
 
   const currentUser = new CurrentUser(Promise.resolve(firebase.auth()))
 
-  return { dataHandlers, currentUser }
+  return { firebase, currentUser }
 }
 
 module.exports = initializeFirebase

@@ -1,3 +1,4 @@
+const MockSnapshot = require('./MockSnapshot')
 const Util = require('../../common/Util.js')
 
 function InMemoryRefFactory(store, debug) {
@@ -16,7 +17,7 @@ function InMemoryRefFactory(store, debug) {
 
     this.on = function (listenerType, _handler) {
       const handler = function (value, pathToFire, opts) {
-        _handler(new MockSnapshot(value, pathToFire), opts)
+        _handler(new MockSnapshot(value, pathToFire, self), opts)
       }
 
       listeners[listenerType] = listeners[listenerType] || {}
@@ -31,7 +32,7 @@ function InMemoryRefFactory(store, debug) {
     }
 
     this.once = function (listenerType, handler) {
-      const snap = new MockSnapshot(store.get(path), path)
+      const snap = new MockSnapshot(store.get(path), path, self)
       handler(snap)
       return { then: _ => _(snap), catch: _ => _ }
     }
@@ -40,7 +41,7 @@ function InMemoryRefFactory(store, debug) {
       const id = `mem-${Date.now()}-${Util.guid()}`
       const newPath = `${path}/${id}`
       store.set(newPath, data)
-      return { then: _ => _(new MockSnapshot(data, newPath)), catch: _ => _ }
+      return { then: _ => _(new MockSnapshot(data, newPath, self)), catch: _ => _ }
     }
     this.path = path
 
@@ -52,7 +53,7 @@ function InMemoryRefFactory(store, debug) {
       const start = Date.now()
       store.set(path, data)
       debug && console.log('after set', Date.now() - start)
-      return { then: _ => _(new MockSnapshot(data, path)), catch: _ => _ }
+      return { then: _ => _(new MockSnapshot(data, path, self)), catch: _ => _ }
     }
 
     this.update = function (data) {
@@ -106,24 +107,12 @@ function InMemoryRefFactory(store, debug) {
       const newData = handler(data)
       store.set(path, newData)
 
-      return Promise.resolve({ snapshot: new MockSnapshot(newData, path) })
+      return Promise.resolve({ snapshot: new MockSnapshot(newData, path, self) })
     }
 
     this.remove = function () {
       store.set(path, null)
       return Promise.resolve()
-    }
-
-    function MockSnapshot(val, path) {
-      this.val = function () {
-        return val
-      }
-
-      this.key = path.split('/')[path.split('/').length - 1]
-
-      this.ref = function () {
-        return self
-      }
     }
 
     this._syncGet = function () {

@@ -2,38 +2,40 @@ const {
   initializeInMemory,
   Hydrator,
   MultiListener
-} = require("../../dist/core/goldish")
+} = require('../../dist/core/goldish')
 
-const initializeFirebase = require("./initialize_firebase")
-const InventoryDisplay = require("./inventory_display")
+const initializeFirebase = require('./initialize_firebase')
+const InventoryDisplay = require('./inventory_display')
 // const seedData = require("./seed_data")
-const React = require("react")
-const ReactDOM = require("react-dom")
+const React = require('react')
+const ReactDOM = require('react-dom')
 const {
   ShortText,
   TextArea,
   Image,
   Toggle,
   WithData
-} = require("../../dist/ui/goldish-ui")
+} = require('../../dist/ui/goldish-ui')
 
 const persistentDataPathMap = {
-  currentInventory: "currentInventory",
+  currentInventory: 'currentInventory',
   Item: {
-    item: "items/<user id:uid>",
-    name: "items/<user id:uid>/name",
-    price: "items/<id:uid>/price",
-    quantity: "items/<id:uid>/quantity",
-    description: "items/<id:uid>/description",
-    imageUrl: "items/<id:uid>/imageUrl"
+    item: 'items/<user id:uid>',
+    name: 'items/<user id:uid>/name',
+    price: 'items/<id:uid>/price',
+    quantity: 'items/<id:uid>/quantity',
+    description: 'items/<id:uid>/description',
+    imageUrl: 'items/<id:uid>/imageUrl'
   }
 }
 
 const db = initializeFirebase(persistentDataPathMap)
 
+window.D = db
+
 const localDataPathMap = {
-  selectedItemId: "selectedItemId",
-  shouldAlarmForLowStock: "shouldAlarmForLowStock"
+  selectedItemId: 'selectedItemId',
+  shouldAlarmForLowStock: 'shouldAlarmForLowStock'
 }
 
 const { dataHandlers: local } = initializeInMemory(localDataPathMap)
@@ -114,12 +116,12 @@ const Topbar = () => {
 
 ReactDOM.render(
   <BigItemDisplay selectedItemId={local.selectedItemId()} />,
-  document.getElementById("more-info-root")
+  document.getElementById('more-info-root')
 )
 
-ReactDOM.render(<Topbar />, document.getElementById("topbar-root"))
+ReactDOM.render(<Topbar />, document.getElementById('topbar-root'))
 
 ReactDOM.render(
   <InventoryDisplay db={db} local={local} />,
-  document.getElementById("inventory-root")
+  document.getElementById('inventory-root')
 )
