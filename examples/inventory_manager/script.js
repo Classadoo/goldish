@@ -2,38 +2,42 @@ const {
   initializeInMemory,
   Hydrator,
   MultiListener
-} = require("../../dist/core/goldish")
+} = require('../../dist/core/goldish')
+// } = require('goldish')
 
-const initializeFirebase = require("./initialize_firebase")
-const InventoryDisplay = require("./inventory_display")
+const initializeFirebase = require('./initialize_firebase')
+const InventoryDisplay = require('./inventory_display')
 // const seedData = require("./seed_data")
-const React = require("react")
-const ReactDOM = require("react-dom")
+const React = require('react')
+const ReactDOM = require('react-dom')
 const {
   ShortText,
   TextArea,
   Image,
   Toggle,
+  ListWithSelectableItems,
+  makeOrderableList,
   WithData
-} = require("../../dist/ui/goldish-ui")
+} = require('../../dist/ui/goldish-ui')
+// } = require('goldish-ui')
 
 const persistentDataPathMap = {
-  currentInventory: "currentInventory",
+  currentInventory: 'currentInventory',
   Item: {
-    item: "items/<user id:uid>",
-    name: "items/<user id:uid>/name",
-    price: "items/<id:uid>/price",
-    quantity: "items/<id:uid>/quantity",
-    description: "items/<id:uid>/description",
-    imageUrl: "items/<id:uid>/imageUrl"
+    item: 'items/<user id:uid>',
+    name: 'items/<user id:uid>/name',
+    price: 'items/<id:uid>/price',
+    quantity: 'items/<id:uid>/quantity',
+    description: 'items/<id:uid>/description',
+    imageUrl: 'items/<id:uid>/imageUrl'
   }
 }
 
 const db = initializeFirebase(persistentDataPathMap)
 
 const localDataPathMap = {
-  selectedItemId: "selectedItemId",
-  shouldAlarmForLowStock: "shouldAlarmForLowStock"
+  selectedItemId: 'selectedItemId',
+  shouldAlarmForLowStock: 'shouldAlarmForLowStock'
 }
 
 const { dataHandlers: local } = initializeInMemory(localDataPathMap)
@@ -64,6 +68,19 @@ new MultiListener({
     })
   }
 })
+
+const ItemComponent = ({ id }) => {
+  return <div>{id}</div>
+}
+
+const DragAndDropTrackList = makeOrderableList(
+  db.currentInventory(),
+  ItemComponent,
+  {
+    itemWrapperClass: 'orderable-tracks-display-wrapper',
+    listClass: 'tracks-list'
+  }
+)
 
 const BigItemDisplay = WithData(({ selectedItemId }) => {
   if (!selectedItemId) {
@@ -97,6 +114,15 @@ const BigItemDisplay = WithData(({ selectedItemId }) => {
 const Topbar = () => {
   return (
     <div className="topbar">
+      <DragAndDropTrackList />
+      <ListWithSelectableItems
+        items={db.currentInventory()}
+        selectedItemHandler={local.selectedItemId()}
+        itemNameHandlerBuilder={db.Item.name}
+        removeItem={(id) => {
+          console.log('funfn', id)
+        }}
+      />
       <div className="topbar-item">
         Inventory Value: <ShortText text={inventoryValueHandler} />
       </div>
@@ -114,12 +140,12 @@ const Topbar = () => {
 
 ReactDOM.render(
   <BigItemDisplay selectedItemId={local.selectedItemId()} />,
-  document.getElementById("more-info-root")
+  document.getElementById('more-info-root')
 )
 
-ReactDOM.render(<Topbar />, document.getElementById("topbar-root"))
+ReactDOM.render(<Topbar />, document.getElementById('topbar-root'))
 
 ReactDOM.render(
   <InventoryDisplay db={db} local={local} />,
-  document.getElementById("inventory-root")
+  document.getElementById('inventory-root')
 )

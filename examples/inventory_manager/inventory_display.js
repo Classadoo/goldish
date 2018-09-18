@@ -1,5 +1,6 @@
 const { Input, WithData } = require("../../dist/ui/goldish-ui")
-const React = require("react")
+// const { Input, WithData } = require('goldish-ui')
+const React = require('react')
 
 const InventoryItem = WithData(
   ({ id, db, local, selectedItemId, quantity, shouldAlarmForLowStock }) => {
@@ -8,11 +9,11 @@ const InventoryItem = WithData(
     const style = {}
 
     if (parseInt(quantity) < 1 && shouldAlarmForLowStock) {
-      style.background = "lightcoral"
+      style.background = 'lightcoral'
     }
 
     if (selectedItemId === id) {
-      style.border = "2px solid lightgreen"
+      style.border = '2px solid lightgreen'
     }
 
     return (

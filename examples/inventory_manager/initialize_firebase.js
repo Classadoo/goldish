@@ -1,4 +1,5 @@
 const { initializeFirebase } = require("../../dist/core/goldish")
+// const { initializeFirebase } = require("goldish")
 const seedData = require("./seed_data")
 
 module.exports = pathMap => {

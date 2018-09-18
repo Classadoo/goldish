@@ -1,0 +1,27 @@
+.list-with-selectable-items-wrapper {
+  border-bottom: 2px solid black;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.item-selector {
+  display: flex;
+  justify-content: center;
+  background: lightcoral;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.50);
+  border-radius: 5px;
+  padding: 8px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.item-selected {
+  border: 3px solid black;
+}
+
+.remove-item-button {
+  margin-left: 8px;
+  cursor: pointer;
+}

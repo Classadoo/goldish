@@ -13,6 +13,8 @@
     "babel-preset-react": "^6.24.1",
     "react": "^15.6.2",
     "react-dom": "^15.6.2",
-    "webpack": "^3.11.0"
+    "webpack": "^3.11.0",
+    "goldish-ui": "0.0.24",
+    "goldish": "0.0.15"
   }
 }

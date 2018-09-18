@@ -1,57 +1,140 @@
-const path = require("path") 
+const path = require('path')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries')
 
 const config = [
   {
-    name: "goldish",
+    mode: 'development',
+    name: 'goldish',
     entry: {
-      goldish: ["./goldish.js"]
+      goldish: ['./goldish.js']
     },
     output: {
-      path: path.resolve("../dist/core"),
-      filename: "[name].js",
-      libraryTarget: "umd",
-      library: "goldish"
+      path: path.resolve('../dist/core'),
+      filename: '[name].js',
+      libraryTarget: 'umd',
+      library: 'goldish'
+    },
+    externals: {
+      react: {
+        commonjs: 'react',
+        commonjs2: 'react',
+        amd: 'react',
+        root: 'react'
+      },
+      'react-dom': {
+        commonjs: 'react-dom',
+        commonjs2: 'react-dom',
+        amd: 'react-dom',
+        root: 'react-dom'
+      }
     },
     resolve: {
-      extensions: [".js", ".json"]
+      extensions: ['.js', '.json']
     },
 
     module: {
-      loaders: [
+      rules: [
         {
           exclude: /(node_modules)/,
           test: /\.js$/,
-          loader: "babel-loader",
-          query: {
-            presets: ["es2015"]
-          }
+
+          use: [
+            {
+              loader: 'babel-loader',
+
+              options: {
+                presets: ['es2015']
+              }
+            }
+          ]
         }
       ]
     }
   },
   {
-    name: "goldish-ui",
+    mode: 'development',
+    name: 'goldish-ui',
     entry: {
-      "goldish-ui": ["./goldish-ui.js"]
+      'goldish-ui': ['./goldish-ui.js']
+    },
+    externals: {
+      react: {
+        commonjs: 'react',
+        commonjs2: 'react',
+        amd: 'react',
+        root: 'react'
+      },
+      'react-dom': {
+        commonjs: 'react-dom',
+        commonjs2: 'react-dom',
+        amd: 'react-dom',
+        root: 'react-dom'
+      }
     },
     output: {
-      path: path.resolve("../dist/ui"),
-      filename: "[name].js",
-      libraryTarget: "umd",
-      library: "goldish-ui"
+      path: path.resolve('../dist/ui'),
+      filename: '[name].js',
+      libraryTarget: 'umd',
+      library: 'goldish-ui'
     },
+    plugins: [new MiniCssExtractPlugin({ filename: '[name].css' })],
     resolve: {
-      extensions: [".js", ".json"]
+      extensions: ['.js', '.json']
     },
     module: {
-      loaders: [
+      rules: [
         {
           exclude: /(node_modules)/,
           test: /\.js$/,
-          loader: "babel-loader",
-          query: {
-            presets: ["react", "es2015"]
-          }
+
+          use: [
+            {
+              loader: 'babel-loader',
+
+              options: {
+                presets: ['react', 'es2015']
+              }
+            }
+          ]
+        },
+        {
+          test: /\.css$/,
+          use: [
+            {
+              loader: MiniCssExtractPlugin.loader
+            },
+            'css-loader'
+          ]
+        }
+      ]
+    }
+  },
+  {
+    mode: 'development',
+    name: 'goldish-ui-styles',
+    entry: {
+      'list-with-selectable-items': [
+        './ui/styles/list-with-selectable-items.css'
+      ]
+    },
+    output: {
+      path: path.resolve('../dist/ui/styles')
+    },
+    plugins: [
+      new MiniCssExtractPlugin({ filename: '[name].css' }),
+      new FixStyleOnlyEntriesPlugin()
+    ],
+    module: {
+      rules: [
+        {
+          test: /\.css$/,
+          use: [
+            {
+              loader: MiniCssExtractPlugin.loader
+            },
+            'css-loader'
+          ]
         }
       ]
     }
