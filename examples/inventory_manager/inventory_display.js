@@ -20,7 +20,7 @@ const InventoryItem = WithData(
       <div className="inventory-item" style={style}>
         <div className="iventory-item-field">
           <div className="iventory-item-field-label">Name:</div>
-          <Input text={db.Item.name(id)} updateOnEnter />
+          <Input text={db.Item.name(id)} />
         </div>
 
         <div className="iventory-item-field">

@@ -1,6 +1,6 @@
-const React = require("react")
-const WithData = require("./WithData")
+const React = require('react')
+const WithData = require('./WithData')
 
-const DataImage = WithData(({ src, style }) => <img style={style} src={src} />)
+const DataImage = WithData(props => <img {...props} />)
 
 module.exports = DataImage

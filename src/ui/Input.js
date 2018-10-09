@@ -5,6 +5,7 @@ const DataInput = WithData(({ text, dataHandlers, updateOnEnter }) => {
   let el
 
   const update = () => {
+    console.log('updating input', el.value)
     dataHandlers.text.set(el.value)
   }
 
