@@ -1,10 +1,14 @@
-const React = require("react")
-const WithData = require("./WithData")
+const React = require('react')
+const WithData = require('./WithData')
 
-const Toggle = WithData(({ onText, offText, state, dataHandlers }) => {
-  const toggle = () => dataHandlers.state.set(!state)
+const Toggle = WithData(({ onText, offText, state, listeners }) => {
+  const toggle = () => listeners.state.set(!state)
 
   return <button onClick={toggle}>{state ? onText : offText}</button>
 })
 
-module.exports = Toggle
+const ToggleBuilder = props => (
+  <Toggle listeners={{ state: props.state }} {...props} />
+)
+
+module.exports = ToggleBuilder

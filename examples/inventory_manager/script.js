@@ -1,7 +1,8 @@
 const {
   initializeInMemory,
   Hydrator,
-  MultiListener
+  MultiListener,
+  initializeAnchorParams,
 } = require('../../dist/core/goldish')
 // } = require('goldish')
 
@@ -33,7 +34,17 @@ const persistentDataPathMap = {
   }
 }
 
+const anchorDataMap = {
+  test: 'test'
+}
+
 const db = initializeFirebase(persistentDataPathMap)
+
+const a = initializeAnchorParams(anchorDataMap)
+
+window.A = a
+
+a.test().set('yoyoyo')
 
 const localDataPathMap = {
   selectedItemId: 'selectedItemId',
