@@ -100,7 +100,7 @@ function AnchorParamStore() {
     }
   }
 
-  $(window).on('hashchange', () => {
+  window.addEventListener('hashchange', () => {
     const currentHash = getParams()
 
     const pathsToFire = {}

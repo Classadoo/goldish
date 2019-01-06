@@ -1,0 +1,9 @@
+{
+  "name": "server",
+  "description": "a world clock app to demonstrate how to use Shovel",
+  "author": "David Gaynor",
+  "version": "0.0.10",
+  "dependencies": {
+    "firebase-admin": "*"
+  }
+}

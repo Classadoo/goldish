@@ -13,7 +13,8 @@ const config = [
       path: path.resolve('../dist/core'),
       filename: '[name].js',
       libraryTarget: 'umd',
-      library: 'goldish'
+      library: 'goldish',
+      globalObject: "typeof self !== 'undefined' ? self : this"
     },
     externals: {
       react: {
